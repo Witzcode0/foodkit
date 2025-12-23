@@ -109,3 +109,8 @@ This password is too short. It must contain at least 8 characters.
 This password is too common.
 Bypass password validation and create user anyway? [y/N]: y
 Superuser created successfully.
+
+
+git add .
+git commit -m "type message here..."
+git push
