@@ -12,31 +12,31 @@
 Python 3.13.3
 
 - Now create virtual env.
-...\(choose-location)\foodkit> python -m venv <env-name>
+...\(choose-location)\foodkit> python -m venv |env-name|
 
 - Activate/Deactivate your env.
 Activate:
-...\(choose-location)\foodkit> <env-name>\Scripts\activate 
+...\(choose-location)\foodkit> |env-name|\Scripts\activate 
 Deactivate:
-(<env-name>)...\(choose-location)\foodkit> <env-name>\Scripts\deactivate 
+(|env-name|)...\(choose-location)\foodkit> |env-name|\Scripts\deactivate 
 
 - create requirements.txt in your base dir
-(<env-name>)...\(choose-location)\foodkit> type nul > requirements.txt
+(|env-name|)...\(choose-location)\foodkit> type nul > requirements.txt
 
 - Now, install Django
-(<env-name>)...\(choose-location)\foodkit> pip install django
+(|env-name|)...\(choose-location)\foodkit> pip install django
 
 - Check install modules and packages:
-(<env-name>)...\(choose-location)\foodkit> pip list/pip freeze
+(|env-name|)...\(choose-location)\foodkit> pip list/pip freeze
 
 - Add installed package inside requirements.txt
-(<env-name>)...\(choose-location)\foodkit> pip freeze > requirements.txt
+(|env-name|)...\(choose-location)\foodkit> pip freeze > requirements.txt
 
 - Install or upgrade module and packages from requirements.txt
-(<env-name>)...\(choose-location)\foodkit> pip install -r requirements.txt
+(|env-name|)...\(choose-location)\foodkit> pip install -r requirements.txt
 
 - Make sure you have installed django in env.
-(<env-name>)...\(choose-location)\foodkit> python
+(|env-name|)...\(choose-location)\foodkit> python
 Python 3.13.3 (tags/v3.13.3:6280bb5, Apr  8 2025, 14:47:33) [MSC v.1943 64 bit (AMD64)] on win32
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import django
@@ -45,12 +45,12 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 OR
 
-(<env-name>)...\(choose-location)\foodkit> python -m django --version
+(|env-name|)...\(choose-location)\foodkit> python -m django --version
 6.0
 
 OR
 
-(<env-name>)...\(choose-location)\foodkit> pip list
+(|env-name|)...\(choose-location)\foodkit> pip list
 Package  Version
 -------- -------
 asgiref  3.11.0
@@ -61,10 +61,10 @@ sqlparse 0.5.5
 tzdata   2025.3
 
 - Now, Creating a project
-(<env-name>)...\(choose-location)\foodkit> django-admin startproject <project> .
+(|env-name|)...\(choose-location)\foodkit> django-admin startproject |project| .
 
 - migrate all table inside the database:
-(<env-name>)...\(choose-location)\foodkit> python manage.py migrate
+(|env-name|)...\(choose-location)\foodkit> python manage.py migrate
 Operations to perform:
   Apply all migrations: admin, auth, contenttypes, sessions
 Running migrations:
@@ -88,7 +88,7 @@ Running migrations:
   Applying sessions.0001_initial... OK
 
   Run your django project:
-(<env-name>)...\(choose-location)\foodkit> python manage.py runserver
+(|env-name|)...\(choose-location)\foodkit> python manage.py runserver
 Watching for file changes with StatReloader
 Performing system checks...
 
@@ -99,7 +99,7 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
 - Create your super user
-(<env-name>)...\(choose-location)\foodkit> python manage.py createsuperuser
+(|env-name|)...\(choose-location)\foodkit> python manage.py createsuperuser
 Username (leave blank to use 'hello'): admin
 Email address: admin@gmail.com
 Password: ********
