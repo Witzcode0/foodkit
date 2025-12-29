@@ -111,6 +111,71 @@ Bypass password validation and create user anyway? [y/N]: y
 Superuser created successfully.
 
 
+Now create django apps
+(|env-name|)...\(choose-location)\foodkit> mkdir apps
+(|env-name|)...\(choose-location)\foodkit> cd apps
+(|env-name|)...\(choose-location)\foodkit\apps> mkdir master
+(|env-name|)...\(choose-location)\foodkit\apps> mkdir users
+(|env-name|)...\(choose-location)\foodkit\apps> mkdir store
+(|env-name|)...\(choose-location)\foodkit\apps> cd..
+(|env-name|)...\(choose-location)\foodkit> python manage.py startapp |app-name| apps/|app-name|
+
+
+Go to the |app-name| dir
+Now open apps.py file and change path of apps
+
+from django.apps import AppConfig
+
+
+class StoreConfig(AppConfig):
+    name = 'apps.|app-name|' # here add apps.
+
+Now register your app in project/settings.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'apps.master',
+    'apps.users',
+    'apps.store',
+]
+
+create urls,templates, static and media dir or file
+
+apps/store/
+  - urls.py  - create urls.py
+  - templates - create dir
+      - store - create dir
+          - index.html
+          - about.html
+          - products.html ....
+  - static - create dir
+      - store - create dir
+
+setup static and media dir path in project/settings.py
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+go and setup static and media dir url in project/urls.py
+
+from django.contrib import admin
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
+
+------------------------------------
+
 git add .
 git commit -m "type message here..."
 git push
