@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        {% block title %}
+        {% endblock %} | Foodkit
+    </title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- START HEADER -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+
+            <!-- Logo -->
+            <a href="{% url 'index' %}" class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-yellow-500 text-white flex items-center justify-center rounded-full">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <span class="text-xl font-semibold">Tailblocks</span>
+            </a>
+
+            <!-- DESKTOP MENU -->
+            <nav class="hidden md:flex items-center gap-6 text-gray-700">
+                <a href="{% url 'index' %}" class="hover:text-yellow-500">Home</a>
+                <a href="{% url 'products' %}" class="hover:text-yellow-500">Products</a>
+                <a href="{% url 'blogs' %}" class="hover:text-yellow-500">Blog</a>
+                <a href="{% url 'about' %}" class="hover:text-yellow-500">About</a>
+                <a href="{% url 'contact' %}" class="hover:text-yellow-500">Contact</a>
+            </nav>
+
+            <!-- DESKTOP BUTTON -->
+            <a href="{% url 'contact' %}" class="hidden md:block">
+                <button class="bg-yellow-500 text-white px-5 py-2 rounded hover:bg-yellow-600 transition">
+                    Connect with us
+                </button>
+            </a>
+
+            <!-- MOBILE MENU BUTTON -->
+            <button id="openMenu" class="md:hidden text-2xl text-gray-700">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- BACKDROP -->
+    <div id="backdrop" class="fixed inset-0 bg-black/50 hidden z-40"></div>
+
+    <!-- MOBILE SLIDE MENU -->
+    <div id="mobileMenu" class="fixed top-0 right-0 h-full w-72 bg-white shadow-xl
+            transform translate-x-full transition-transform duration-300 z-50">
+
+        <!-- Menu Header -->
+        <div class="flex justify-between items-center px-5 py-4 border-b">
+            <span class="text-lg font-semibold">Menu</span>
+            <button id="closeMenu" class="text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Links -->
+        <nav class="flex flex-col gap-5 px-6 py-6 text-gray-700">
+            <a href="#" class="hover:text-yellow-500">Home</a>
+            <a href="#" class="hover:text-yellow-500">About</a>
+            <a href="#" class="hover:text-yellow-500">Products</a>
+            <a href="#" class="hover:text-yellow-500">Contact</a>
+
+            <button class="mt-6 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600">
+                Get Started
+            </button>
+        </nav>
+    </div>
+
+    <!-- END HEADER -->
+
+    <!-- PAGE CONTENT (Demo spacing) -->
+    <div class="">
+        {% block body %}
+        {% endblock %}
+    </div>
+
+    <!-- START FOOTER -->
+    <footer class="bg-gray-900 text-gray-300">
+        <div class="container mx-auto px-6 py-16">
+
+            <!-- Top Section -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-10">
+
+                <!-- Company Info -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-yellow-500 text-white flex items-center justify-center rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                                class="w-6 h-6" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xl font-semibold text-white">Tailblocks</span>
+                    </div>
+
+                    <p class="mt-4 text-sm leading-relaxed text-gray-400">
+                        We are a quality-driven brand focused on building modern, scalable and
+                        user-friendly digital products. Our goal is to deliver reliable solutions
+                        that help businesses grow faster in the digital era.
+                    </p>
+
+                    <!-- Social Icons -->
+                    <div class="flex gap-4 mt-6">
+                        <a class="hover:text-yellow-500 transition"><i class="fab fa-facebook-f"></i></a>
+                        <a class="hover:text-yellow-500 transition"><i class="fab fa-twitter"></i></a>
+                        <a class="hover:text-yellow-500 transition"><i class="fab fa-instagram"></i></a>
+                        <a class="hover:text-yellow-500 transition"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <!-- Footer Links -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-yellow-500">About Us</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Careers</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Blog</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Products</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-yellow-500">Web Solutions</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Mobile Apps</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">AI Services</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Cloud Hosting</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-yellow-500">Help Center</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-yellow-500">FAQs</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Bottom Section -->
+            <div
+                class="border-t border-gray-700 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between text-sm">
+                <p class="text-gray-400">
+                    © 2025 Tailblocks. All rights reserved.
+                </p>
+                <p class="mt-2 md:mt-0 text-gray-400">
+                    Designed with ❤️ using Tailwind CSS
+                </p>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- END FOOTER -->
+
+
+    <!-- JS -->
+    <script>
+        const openMenu = document.getElementById("openMenu");
+        const closeMenu = document.getElementById("closeMenu");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const backdrop = document.getElementById("backdrop");
+
+        openMenu.addEventListener("click", () => {
+            mobileMenu.classList.remove("translate-x-full");
+            backdrop.classList.remove("hidden");
+        });
+
+        closeMenu.addEventListener("click", closeMenuFunc);
+        backdrop.addEventListener("click", closeMenuFunc);
+
+        function closeMenuFunc() {
+            mobileMenu.classList.add("translate-x-full");
+            backdrop.classList.add("hidden");
+        }
+    </script>
+
+</body>
+
+</html>
