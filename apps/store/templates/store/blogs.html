@@ -5,5 +5,160 @@ Blog
 {% endblock %}
 
 {% block body %}
-Blog page
+<!-- blogs -->
+ <section class="bg-gray-50 py-24">
+  <div class="container mx-auto px-6">
+
+    <!-- Section Header -->
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+        Latest from Our <span class="text-yellow-500">Healthy Journal</span>
+      </h2>
+      <p class="mt-4 max-w-2xl mx-auto text-gray-600">
+        Learn about natural foods, food kits, immunity boosters, and healthy
+        lifestyle tips curated by our experts.
+      </p>
+    </div>
+
+    <!-- Blog Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+      <!-- Blog Card -->
+      <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden">
+        <div class="relative">
+          <img src="https://dummyimage.com/600x400"
+               class="w-full h-56 object-cover"
+               alt="Blog">
+
+          <span class="absolute top-4 left-4 bg-yellow-500 text-white text-xs px-3 py-1 rounded-full">
+            Food Kit
+          </span>
+        </div>
+
+        <div class="p-6">
+          <!-- Date -->
+          <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+            <i class="fa-regular fa-calendar"></i>
+            <span>18 July 2025</span>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Why a Complete Food Kit is Best for Daily Nutrition
+          </h3>
+
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">
+            Discover how a balanced food kit with fruits, vegetables,
+            spices, herbs, and honey can simplify healthy cooking.
+          </p>
+
+          <!-- Author + Read -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img src="https://dummyimage.com/100x100"
+                   class="w-8 h-8 rounded-full object-cover"
+                   alt="Author">
+              <span class="text-sm font-medium text-gray-700">
+                Team Fudvira
+              </span>
+            </div>
+
+            <a href="#" class="text-sm font-medium text-yellow-600 hover:underline">
+              Read More →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog Card -->
+      <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden">
+        <div class="relative">
+          <img src="https://dummyimage.com/601x401"
+               class="w-full h-56 object-cover"
+               alt="Blog">
+          <span class="absolute top-4 left-4 bg-green-600 text-white text-xs px-3 py-1 rounded-full">
+            Herbal
+          </span>
+        </div>
+
+        <div class="p-6">
+          <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+            <i class="fa-regular fa-calendar"></i>
+            <span>10 July 2025</span>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Herbal Powders That Boost Immunity Naturally
+          </h3>
+
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">
+            Learn how Amla, Ashwagandha, and other herbal powders
+            support immunity and overall wellness.
+          </p>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img src="https://dummyimage.com/101x101"
+                   class="w-8 h-8 rounded-full object-cover"
+                   alt="Author">
+              <span class="text-sm font-medium text-gray-700">
+                Nutrition Expert
+              </span>
+            </div>
+
+            <a href="#" class="text-sm font-medium text-yellow-600 hover:underline">
+              Read More →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog Card -->
+      <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden">
+        <div class="relative">
+          <img src="https://dummyimage.com/602x402"
+               class="w-full h-56 object-cover"
+               alt="Blog">
+          <span class="absolute top-4 left-4 bg-orange-500 text-white text-xs px-3 py-1 rounded-full">
+            Honey
+          </span>
+        </div>
+
+        <div class="p-6">
+          <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+            <i class="fa-regular fa-calendar"></i>
+            <span>02 July 2025</span>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Raw Honey vs Processed Honey: What to Choose?
+          </h3>
+
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">
+            Understand the difference between raw and processed honey
+            and why natural honey is better for health.
+          </p>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img src="https://dummyimage.com/102x102"
+                   class="w-8 h-8 rounded-full object-cover"
+                   alt="Author">
+              <span class="text-sm font-medium text-gray-700">
+                Health Advisor
+              </span>
+            </div>
+
+            <a href="#" class="text-sm font-medium text-yellow-600 hover:underline">
+              Read More →
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- blogs -->
+
 {% endblock %}

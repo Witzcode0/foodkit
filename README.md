@@ -174,7 +174,25 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 
+
+<!-- create model -->
+class TableName(BaseModel):
+    col_name1 = models.FieldType(configurations....)
+    col_name2 = models.FieldType(configurations....)
+    col_name3 = models.FieldType(configurations....)
+    col_name4 = models.FieldType(configurations....)
+
+python manage.py makemigrations
+python manage.py migrate
 ------------------------------------
+
+<!-- Prepare django form -->
+<form method="post" action="" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input type="text" name="field_name">
+<button type="submit" >
+ </form>
 
 git add .
 git commit -m "type message here..."
