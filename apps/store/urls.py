@@ -3,6 +3,7 @@ from apps.store.views import *
 
 urlpatterns = [
     path("signup/", signup, name="signup"),
+    path("otp-verify/", otp_verify, name="otp_verify"),
     path("signin/", signin, name="signin"),
     path("forgot-password/", forgot_password, name="forgot_password"),
     path("", index, name="index"),

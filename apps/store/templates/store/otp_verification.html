@@ -1,0 +1,74 @@
+{% extends 'store/base.html' %}
+{% block title %}OTP Verification{% endblock %}
+
+{% block body %}
+<section class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
+
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-2">
+      OTP Verification 🔐
+    </h2>
+    <p class="text-center text-gray-600 mb-6">
+      Enter the OTP sent to your email
+    </p>
+
+    <!-- start message section -->
+    {% if messages %}
+    {% for message in messages %}
+    <div
+      class="p-4 mb-4 rounded-lg text-white flex items-center justify-between
+      {% if message.tags == 'error' %}bg-red-500
+      {% elif message.tags == 'warning' %}bg-yellow-400
+      {% elif message.tags == 'success' %}bg-green-500
+      {% elif message.tags == 'info' %}bg-blue-400
+      {% endif %}"
+      role="alert">
+      <p>{{ message }}</p>
+      <button type="button"
+              class="ml-4 px-2 py-1 rounded bg-gray-800 text-white hover:bg-gray-700"
+              onclick="this.parentElement.remove();">
+        &times;
+      </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <!-- end message section -->
+
+    <form method="post" action="">
+      {% csrf_token %}
+
+      <input type="hidden" name="email" placeholder="Example@gmail.com"
+               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-200 focus:border-yellow-500 outline-none" value="{{email}}">
+
+      <div class="mb-6">
+        <label class="block text-sm text-gray-600 mb-1">Enter OTP</label>
+        <input
+          type="text"
+          name="otp"
+          maxlength="6"
+          placeholder="_ _ _ _"
+          class="w-full text-center tracking-widest text-xl border rounded-lg px-4 py-3
+                 focus:ring-2 focus:ring-yellow-200 focus:border-yellow-500 outline-none"
+          required
+        >
+      </div>
+
+      <button type="submit"
+              class="w-full bg-yellow-500 text-white py-3 rounded-lg font-medium
+                     hover:bg-yellow-600 transition">
+        Verify OTP
+      </button>
+    </form>
+
+    <div class="text-center mt-6">
+      <p class="text-sm text-gray-600">
+        Didn’t receive OTP?
+        <a href="" class="text-yellow-600 font-medium hover:underline">
+          Resend OTP
+        </a>
+      </p>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
