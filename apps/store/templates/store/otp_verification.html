@@ -34,7 +34,7 @@
     {% endif %}
     <!-- end message section -->
 
-    <form method="post" action="">
+    <form method="post" action="{% url 'otp_verify'  %}">
       {% csrf_token %}
 
       <input type="hidden" name="email" placeholder="Example@gmail.com"

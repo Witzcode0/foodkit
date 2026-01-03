@@ -43,6 +43,7 @@
             <!-- DESKTOP BUTTON -->
             <!-- DESKTOP AUTH -->
             <!-- DESKTOP AUTH -->
+             {% if request.session.user_id %}
             <div class="hidden md:flex items-center gap-4">
 
                 <!-- Account Dropdown -->
@@ -58,31 +59,34 @@
                         <a href="#" class="block px-4 py-2 hover:bg-gray-100">My Account</a>
 
                         <a href="#" class="block px-4 py-2 hover:bg-gray-100">My Orders</a>
-
-                        <form method="post">
-                            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500">
-                                Logout
-                            </button>
-                        </form>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 text-red-500">Logout</a>
                     </div>
                 </div>
+                
+                {% else %}
 
-                <!-- Sign In / Sign Up -->
-                <a href="{% url 'signin' %}" class="px-4 py-2 border rounded hover:bg-gray-100">
-                    Sign In
-                </a>
+                <div class="">
+                    <!-- Sign In / Sign Up -->
+                    <a href="{% url 'signin' %}" class="px-4 py-2 border rounded hover:bg-gray-100 mr-3">
+                        Sign In
+                    </a>
+    
+                    <a href="{% url 'signup' %}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                        Sign Up
+                    </a>
+                </div>
 
-                <a href="{% url 'signup' %}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                    Sign Up
-                </a>
+                
+                {% endif %}
+                <!-- MOBILE MENU BUTTON -->
+            <button id="openMenu" class="md:hidden text-2xl text-gray-700">
+                <i class="fas fa-bars"></i>
+            </button>
 
             </div>
 
 
-            <!-- MOBILE MENU BUTTON -->
-            <button id="openMenu" class="md:hidden text-2xl text-gray-700">
-                <i class="fas fa-bars"></i>
-            </button>
+            
         </div>
     </header>
 
@@ -121,11 +125,9 @@
                 My Orders
             </a>
 
-            <form method="post" action="">
-                <button type="submit" class="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600">
-                    Logout
-                </button>
-            </form>
+            <a href="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600">
+                Logout
+            </a>
 
             <a href="" class="bg-gray-100 py-2 rounded text-center">
                 Sign In

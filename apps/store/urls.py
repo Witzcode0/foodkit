@@ -5,10 +5,12 @@ urlpatterns = [
     path("signup/", signup, name="signup"),
     path("otp-verify/", otp_verify, name="otp_verify"),
     path("signin/", signin, name="signin"),
+    path("logout/", logout, name="logout"),
     path("forgot-password/", forgot_password, name="forgot_password"),
     path("", index, name="index"),
     path("products/", products, name="products"),
     path("blogs/", blogs, name="blogs"),
     path("about/", about, name="about"),
     path("contact/", contact, name="contact"),
+    path("profile/", profile, name="profile"),
 ]

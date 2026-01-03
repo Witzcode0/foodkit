@@ -27,7 +27,7 @@
     {% endif %}
     <!-- end message section -->
 
-    <form method="post" action="" enctype="multipart/form-data">
+    <form method="post" action="{% url 'signin' %}" enctype="multipart/form-data">
       {% csrf_token %}
 
       <div class="mb-4">
