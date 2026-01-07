@@ -19,3 +19,13 @@ class Address(BaseModel):
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     zipcode = models.CharField(max_length=255, blank=True, null=True)
+
+class Inqueries(BaseModel):
+    STATUS_CHOISES = [
+        ("Pending", "Pending"),
+        ("Resolved", "Resolved")
+    ]
+    fullname = models.CharField(max_length=255, blank=False, null=False)
+    email = models.EmailField(max_length=255, null=False, blank=False)
+    message = models.TextField()
+    status = models.CharField(default="Pending", choices=STATUS_CHOISES)

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.mail import send_mail
 from apps.master.helpers import is_valid_email, is_valid_mobile, is_valid_password, generate_otp
-from apps.users.models import User
+from apps.users.models import User, Inqueries
 from functools import wraps
 
 # Create your views here.
@@ -158,8 +158,30 @@ def about(request):
     return render(request, "store/about.html")
 
 def contact(request):
+    if request.method == "POST":
+        fullname_ = request.POST['fullname']
+        email_ = request.POST['email']
+        message_ = request.POST['message']
+
+        if not is_valid_email(email_):
+            messages.warning(request, "Your email address is invalid.")
+            return render(request, "store/contact.html")
+
+        new_inquiry = Inqueries.objects.create(
+            fullname= fullname_,
+            email = email_,
+            message = message_
+        )
+        new_inquiry.save()
+        messages.success(request, "Your query submitted succefully.")
+        return redirect("contact")
     return render(request, "store/contact.html")
 
 @login_required
 def profile(request):
-    return render(request, "store/profile.html")
+    user_id = request.session["user_id"]
+    get_user = User.objects.get(id=user_id)
+    context = {
+        'user':get_user
+    }
+    return render(request, "store/profile.html", context)

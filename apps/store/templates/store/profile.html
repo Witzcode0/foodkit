@@ -1,9 +1,87 @@
 {% extends 'store/base.html' %}
 
-{% block title %}
-Profile
-{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block body %}
-Profile page
+<div class="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center py-10 px-4">
+
+  <div class="bg-white/90 backdrop-blur shadow-xl rounded-3xl w-full max-w-4xl overflow-hidden">
+
+    <!-- Cover -->
+    <div class="h-44 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-400"></div>
+
+    <!-- Profile Content -->
+    <div class="relative px-6 pb-8">
+
+      <!-- Avatar -->
+      <div class="absolute -top-16 left-6">
+        <img
+          src="{% if request.user.profile.image %}{{ request.user.profile.image.url }}{% else %}https://i.pravatar.cc/150{% endif %}"
+          class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+          alt="Profile"
+        >
+      </div>
+
+      <!-- Logout -->
+      <div class="flex justify-end mt-4">
+        <a href="{% url 'logout' %}"
+           class="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg hover:scale-105 transition">
+          Logout
+        </a>
+      </div>
+
+      <!-- User Info -->
+      <div class="mt-20">
+        <h2 class="text-3xl font-bold text-gray-800">
+          {{ user.first_name }} {{ user.last_name }}
+        </h2>
+
+        {% if user.is_active %}
+        <p class="mt-2 inline-flex items-center gap-2 text-sm font-medium text-green-600">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          Active Account
+        </p>
+        {% else %}
+        <p class="mt-2 inline-flex items-center gap-2 text-sm font-medium text-red-600">
+          <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+          Inactive Account
+        </p>
+        {% endif %}
+      </div>
+
+      <!-- Contact Info -->
+      <div class="mt-6 grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="font-semibold text-gray-500">Email</p>
+          <p class="mt-1">{{ user.email }}</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="font-semibold text-gray-500">Mobile</p>
+          <p class="mt-1">{{ user.mobile|default:"N/A" }}</p>
+        </div>
+      </div>
+
+      <!-- Actions List Group -->
+      <div class="mt-8">
+        <ul class="rounded-2xl border border-gray-200 bg-white shadow-sm divide-y overflow-hidden">
+
+          <!-- <a href="" class="group flex items-center gap-4 px-5 py-4 hover:bg-yellow-50 cursor-pointer transition">
+            <span class="font-medium text-gray-700">My Cart</span>
+          </a>
+
+          <a href="" class="group flex items-center gap-4 px-5 py-4 hover:bg-yellow-50 cursor-pointer transition">
+            <span class="font-medium text-gray-700">My Orders</span>
+          </a> -->
+
+          <a href="{% url 'logout' %}" class="group flex items-center gap-4 px-5 py-4 hover:bg-red-50 cursor-pointer transition">
+            <span class="font-medium text-red-600">Logout</span>
+          </a>
+
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
 {% endblock %}
