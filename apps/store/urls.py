@@ -10,6 +10,7 @@ urlpatterns = [
     path("", index, name="index"),
     path("products/", products, name="products"),
     path("blogs/", blogs, name="blogs"),
+    path("blogs/<uuid:id>/", blog_detail, name="blog_detail"),
     path("about/", about, name="about"),
     path("contact/", contact, name="contact"),
     path("profile/", profile, name="profile"),

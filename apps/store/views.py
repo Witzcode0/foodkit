@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.mail import send_mail
 from apps.master.helpers import is_valid_email, is_valid_mobile, is_valid_password, generate_otp
 from apps.users.models import User, Inqueries
+from apps.store.models import BlogCategory, Blogs
 from functools import wraps
 
 # Create your views here.
@@ -152,7 +153,15 @@ def products(request):
     return render(request, "store/products.html")
 
 def blogs(request):
-    return render(request, "store/blogs.html")
+    blogs = Blogs.objects.all().order_by("-created_at")
+    context = {
+        'blogs': blogs
+    }
+    return render(request, "store/blogs.html", context)
+
+def blog_detail(request, id):
+    blog = get_object_or_404(Blogs, id=id)
+    return render(request, "store/blog_detail.html", {"blog": blog})
 
 def about(request):
     return render(request, "store/about.html")
