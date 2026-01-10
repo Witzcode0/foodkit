@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.conf import settings
 from django.core.mail import send_mail
 from apps.master.helpers import is_valid_email, is_valid_mobile, is_valid_password, generate_otp
 from apps.users.models import User, Inqueries
@@ -144,16 +146,103 @@ def logout(request):
     return redirect("signin")
 
 def forgot_password(request):
+    if request.method == "POST":
+        email_ = request.POST['email']
+
+        if not is_valid_email(email_):
+            print("-----1")
+            messages.warning(request, "Your email address is invalid.")
+            return redirect("forgot_password")
+
+        # Email already exists check (FIXED)
+        if not User.objects.filter(email=email_).exists():
+            print("-----2")
+            messages.info(request, "No account exists with this email.")
+            return redirect("forgot_password")
+        
+
+        get_user = User.objects.get(email=email_)
+        print("-----3", get_user)
+        otp_ = generate_otp(length=4)
+        print("-----4", otp_)
+        subject = "Password Reset OTP"
+        message = f"""
+            Hello,
+
+            We received a request to reset your password.
+
+            Your One-Time Password (OTP) is: {otp_}
+
+            This OTP is valid for 5 minutes.
+            Please do not share this OTP with anyone.
+
+            If you did not request this, please ignore this email.
+
+            Thank you,
+            Your App Team
+        """
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [email_],
+            fail_silently=False,
+        )
+        print("-----5", "email sent")
+        get_user.otp = otp_
+        get_user.save()
+        print("-----6", "otp saved")
+        messages.success(request, "OTP has been sent to your email.")
+        return render(request, "store/forgot_password_otp_verify.html", {"email":email_})
+    print("-----0", "page open")
     return render(request, "store/forgot_password.html")
 
+def forgot_password_otp_verify(request):
+    if request.method == "POST":
+        email_ = request.POST['email']
+        otp_ = request.POST['otp']
+        new_password_ = request.POST['new_password']
+        confirm_password_ = request.POST['confirm_password']
+
+        get_user = User.objects.get(email=email_)
+
+        if get_user.otp != otp_:
+            messages.warning(request, "Invalid OTP!!!")
+            return render(request, "store/forgot_password_otp_verify.html", {"email":email_})
+        
+
+        if new_password_ != confirm_password_:
+            messages.warning(request, "New password and confirm password does not match.")
+            return render(request, "store/forgot_password_otp_verify.html", {"email":email_})
+        
+        is_valid_password_, message = is_valid_password(new_password_)
+        if not is_valid_password_:
+            messages.warning(request, message)
+            return render(request, "store/forgot_password_otp_verify.html", {"email":email_})
+        
+        get_user.password = new_password_
+        get_user.save()
+        messages.success(request, "Password has been successfull updated.")
+        return redirect("signin")
+    return render(request, "store/forgot_password_otp_verify.html")
+
 def index(request):
-    return render(request, "store/index.html")
+    blogs = Blogs.objects.all().order_by("-created_at")[:3]
+    context = {
+        'blogs': blogs
+    }
+    return render(request, "store/index.html", context)
 
 def products(request):
     return render(request, "store/products.html")
 
 def blogs(request):
-    blogs = Blogs.objects.all().order_by("-created_at")
+    blog_list = Blogs.objects.all().order_by("-created_at")
+
+    paginator = Paginator(blog_list, 6)  # 5 blogs per page
+    page_number = request.GET.get('page')
+    blogs = paginator.get_page(page_number)
+
     context = {
         'blogs': blogs
     }

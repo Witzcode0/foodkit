@@ -7,6 +7,7 @@ urlpatterns = [
     path("signin/", signin, name="signin"),
     path("logout/", logout, name="logout"),
     path("forgot-password/", forgot_password, name="forgot_password"),
+    path("forgot-password-otp-verify/", forgot_password_otp_verify, name="forgot_password_otp_verify"),
     path("", index, name="index"),
     path("products/", products, name="products"),
     path("blogs/", blogs, name="blogs"),
