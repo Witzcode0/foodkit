@@ -52,3 +52,73 @@ class Blogs(BaseModel):
             os.rename(self.image.path, new_path)
             self.image.name = new_name
             super().save(update_fields=["image"])
+
+def product_image_path(instance, filename):
+    """
+    Upload images inside:
+    products/product_<id>/filename
+    Safe even before instance.id exists
+    """
+    product_id = instance.id or "temp"
+    return f"products/product_{product_id}/{filename}"
+
+
+class ProductCategory(BaseModel):
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        verbose_name = "Product Category"
+        verbose_name_plural = "Product Categories"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+
+class Product(BaseModel):
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(
+        ProductCategory,
+        on_delete=models.CASCADE,
+        related_name="products"
+    )
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    weight = models.CharField(max_length=50)
+    content = models.TextField()
+    additional_details = models.JSONField(blank=True, null=True)
+
+    image_1 = models.ImageField(
+        upload_to=product_image_path,
+        default="products/default_product.jpg",
+        blank=True,
+        null=True
+    )
+    image_2 = models.ImageField(
+        upload_to=product_image_path,
+        blank=True,
+        null=True
+    )
+    image_3 = models.ImageField(
+        upload_to=product_image_path,
+        blank=True,
+        null=True
+    )
+    image_4 = models.ImageField(
+        upload_to=product_image_path,
+        blank=True,
+        null=True
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+    # ⭐ PRIMARY IMAGE LOGIC
+    def primary_image(self):
+        if self.image_1:
+            return self.image_1.url
+        return settings.MEDIA_URL + "products/default_product.jpg"

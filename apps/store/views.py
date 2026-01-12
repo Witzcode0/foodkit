@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from apps.master.helpers import is_valid_email, is_valid_mobile, is_valid_password, generate_otp
 from apps.users.models import User, Inqueries
-from apps.store.models import BlogCategory, Blogs
+from apps.store.models import BlogCategory, Blogs, Product
 from functools import wraps
 
 # Create your views here.
@@ -234,7 +234,15 @@ def index(request):
     return render(request, "store/index.html", context)
 
 def products(request):
-    return render(request, "store/products.html")
+    product_list = Product.objects.filter(is_active=True)
+    paginator = Paginator(product_list, 12)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "store/products.html", {
+        "products": page_obj
+    })
 
 def blogs(request):
     blog_list = Blogs.objects.all().order_by("-created_at")
