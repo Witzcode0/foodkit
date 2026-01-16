@@ -244,6 +244,15 @@ def products(request):
         "products": page_obj
     })
 
+def product_detail(request, id):
+    product = get_object_or_404(Product, id=id)
+    return render(redirect, "store/porduct_detail.html", {"product":product})
+
+def add_to_cart(request, product_id):
+    print(product_id)
+    return render(request, "store/cart.html")
+
+
 def blogs(request):
     blog_list = Blogs.objects.all().order_by("-created_at")
 
@@ -258,6 +267,7 @@ def blogs(request):
 
 def blog_detail(request, id):
     blog = get_object_or_404(Blogs, id=id)
+    print(blog)
     return render(request, "store/blog_detail.html", {"blog": blog})
 
 def about(request):

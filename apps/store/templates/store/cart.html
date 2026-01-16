@@ -1,0 +1,127 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}
+Cart
+{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto px-6 py-24">
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">
+        Shopping Cart
+    </h1>
+
+    {% if cart_items %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- ================= CART ITEMS ================= -->
+        <div class="lg:col-span-2 space-y-6">
+
+            {% for item in cart_items %}
+            <div class="flex items-center gap-6 border rounded-xl p-5 bg-white">
+
+                <!-- Product Image -->
+                <img
+                    src="{{ item.product.primary_image }}"
+                    alt="{{ item.product.name }}"
+                    class="w-24 h-24 object-contain rounded-lg border"
+                >
+
+                <!-- Product Info -->
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        {{ item.product.name }}
+                    </h3>
+
+                    <p class="text-sm text-gray-500">
+                        Weight: {{ item.product.weight }}
+                    </p>
+
+                    <p class="text-green-600 font-semibold mt-1">
+                        ₹ {{ item.product.price }}
+                    </p>
+                </div>
+
+                <!-- Quantity -->
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'cart_decrease' item.product.id %}"
+                       class="px-3 py-1 border rounded hover:bg-gray-100">−</a>
+
+                    <span class="px-4 py-1 border rounded">
+                        {{ item.quantity }}
+                    </span>
+
+                    <a href="{% url 'cart_increase' item.product.id %}"
+                       class="px-3 py-1 border rounded hover:bg-gray-100">+</a>
+                </div>
+
+                <!-- Price -->
+                <div class="w-24 text-right font-semibold">
+                    ₹ {{ item.subtotal }}
+                </div>
+
+                <!-- Remove -->
+                <a href="{% url 'cart_remove' item.product.id %}"
+                   class="text-red-500 hover:text-red-700">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ================= CART SUMMARY ================= -->
+        <div class="border rounded-xl p-6 bg-white h-fit">
+
+            <h2 class="text-xl font-semibold mb-4">
+                Order Summary
+            </h2>
+
+            <div class="flex justify-between text-sm mb-3">
+                <span>Subtotal</span>
+                <span>₹ {{ cart_subtotal }}</span>
+            </div>
+
+            <div class="flex justify-between text-sm mb-3">
+                <span>Shipping</span>
+                <span class="text-green-600">Free</span>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="flex justify-between text-lg font-bold mb-6">
+                <span>Total</span>
+                <span>₹ {{ cart_total }}</span>
+            </div>
+
+            <a href="{% url 'checkout' %}"
+               class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+                Proceed to Checkout
+            </a>
+
+            <a href="{% url 'products' %}"
+               class="block text-center mt-4 text-sm text-gray-600 hover:underline">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- ================= EMPTY CART ================= -->
+    <div class="text-center py-20">
+        <i class="fa-solid fa-cart-shopping text-5xl text-gray-300 mb-6"></i>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-2">
+            Your cart is empty
+        </h2>
+        <p class="text-gray-500 mb-6">
+            Looks like you haven’t added anything yet
+        </p>
+        <a href="{% url 'products' %}"
+           class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+            Start Shopping
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
