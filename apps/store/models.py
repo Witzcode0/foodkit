@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from apps.master.models import BaseModel
+from apps.users.models import User
 import os
 # Create your models here.
 
@@ -122,3 +123,19 @@ class Product(BaseModel):
         if self.image_1:
             return self.image_1.url
         return settings.MEDIA_URL + "products/default_product.jpg"
+    
+class Cart(BaseModel):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="cart_items"
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    qty = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product.name} ({self.qty})"
+
+    @property
+    def total_price(self):
+        return self.product.price * self.qty

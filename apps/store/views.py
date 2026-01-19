@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from apps.master.helpers import is_valid_email, is_valid_mobile, is_valid_password, generate_otp
 from apps.users.models import User, Inqueries
-from apps.store.models import BlogCategory, Blogs, Product
+from apps.store.models import BlogCategory, Blogs, Product, Cart
 from functools import wraps
 
 # Create your views here.
@@ -245,13 +245,96 @@ def products(request):
     })
 
 def product_detail(request, id):
-    product = get_object_or_404(Product, id=id)
+    product = Product.objects.get(id=id)
     return render(redirect, "store/porduct_detail.html", {"product":product})
 
+@login_required
 def add_to_cart(request, product_id):
-    print(product_id)
-    return render(request, "store/cart.html")
+    product = get_object_or_404(Product, id=product_id)
 
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user = get_object_or_404(User, id=user_id)  # ✅ FIX
+
+    cart_item, created = Cart.objects.get_or_create(
+        user=user,
+        product=product
+    )
+    if not created:
+        cart_item.qty += 1
+    else:
+        cart_item.qty = 1
+
+    cart_item.save()
+
+    messages.success(request, f"{product.name} added to cart")
+    return redirect("cart")  # cart page URL name
+
+@login_required
+def cart(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    cart_items = Cart.objects.filter(user=user_)
+    total_amount = sum(item.total_price for item in cart_items)
+
+    return render(request, "store/cart.html", {
+        "cart_items": cart_items,
+        "total_amount": total_amount
+    })
+
+@login_required
+def cart_increase(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    cart_item = get_object_or_404(Cart, id=id, user=user_)
+    cart_item.qty += 1
+    cart_item.save()
+    return redirect("cart")
+
+@login_required
+def cart_decrease(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    cart_item = get_object_or_404(Cart, id=id, user=user_)
+
+    if cart_item.qty > 1:
+        cart_item.qty -= 1
+        cart_item.save()
+    else:
+        cart_item.delete()  # auto remove if qty becomes 0
+
+    return redirect("cart")
+
+@login_required
+def cart_remove(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    cart_item = get_object_or_404(
+        Cart,
+        id=id,
+        user=user_
+    )
+    cart_item.delete()
+    return redirect("cart")
 
 def blogs(request):
     blog_list = Blogs.objects.all().order_by("-created_at")

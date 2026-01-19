@@ -1,9 +1,7 @@
 {% extends 'store/base.html' %}
 {% load static %}
 
-{% block title %}
-Cart
-{% endblock %}
+{% block title %}Cart{% endblock %}
 
 {% block body %}
 <div class="max-w-7xl mx-auto px-6 py-24">
@@ -21,12 +19,17 @@ Cart
             {% for item in cart_items %}
             <div class="flex items-center gap-6 border rounded-xl p-5 bg-white">
 
+                <!-- Select Checkbox (PLACEHOLDER) -->
+                <div>
+                    <input type="checkbox"
+                        class="cart-checkbox w-5 h-5 text-green-600 border-gray-300 rounded cursor-pointer"
+                        value="{{ item.id }}">
+
+                </div>
+
                 <!-- Product Image -->
-                <img
-                    src="{{ item.product.primary_image }}"
-                    alt="{{ item.product.name }}"
-                    class="w-24 h-24 object-contain rounded-lg border"
-                >
+                <img src="{{ item.product.primary_image }}" alt="{{ item.product.name }}"
+                    class="w-24 h-24 object-contain rounded-lg border">
 
                 <!-- Product Info -->
                 <div class="flex-1">
@@ -45,28 +48,26 @@ Cart
 
                 <!-- Quantity -->
                 <div class="flex items-center gap-2">
-                    <a href="{% url 'cart_decrease' item.product.id %}"
-                       class="px-3 py-1 border rounded hover:bg-gray-100">−</a>
+                    <a href="{% url 'cart_decrease' item.id %}" class="px-3 py-1 border rounded hover:bg-gray-100">−</a>
 
                     <span class="px-4 py-1 border rounded">
-                        {{ item.quantity }}
+                        {{ item.qty }}
                     </span>
 
-                    <a href="{% url 'cart_increase' item.product.id %}"
-                       class="px-3 py-1 border rounded hover:bg-gray-100">+</a>
+                    <a href="{% url 'cart_increase' item.id %}" class="px-3 py-1 border rounded hover:bg-gray-100">+</a>
                 </div>
 
                 <!-- Price -->
                 <div class="w-24 text-right font-semibold">
-                    ₹ {{ item.subtotal }}
+                    ₹ {{ item.total_price }}
                 </div>
 
                 <!-- Remove -->
-                <a href="{% url 'cart_remove' item.product.id %}"
-                   class="text-red-500 hover:text-red-700">
+                <a href="{% url 'cart_remove' item.id %}" class="text-red-500 hover:text-red-700">
                     <i class="fa-solid fa-trash"></i>
                 </a>
             </div>
+
             {% endfor %}
         </div>
 
@@ -79,7 +80,7 @@ Cart
 
             <div class="flex justify-between text-sm mb-3">
                 <span>Subtotal</span>
-                <span>₹ {{ cart_subtotal }}</span>
+                <span>₹ {{ cart_total }}</span>
             </div>
 
             <div class="flex justify-between text-sm mb-3">
@@ -94,18 +95,16 @@ Cart
                 <span>₹ {{ cart_total }}</span>
             </div>
 
-            <a href="{% url 'checkout' %}"
-               class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+            <a href=""
+                class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
                 Proceed to Checkout
             </a>
 
-            <a href="{% url 'products' %}"
-               class="block text-center mt-4 text-sm text-gray-600 hover:underline">
+            <a href="{% url 'products' %}" class="block text-center mt-4 text-sm text-gray-600 hover:underline">
                 Continue Shopping
             </a>
         </div>
     </div>
-
     {% else %}
     <!-- ================= EMPTY CART ================= -->
     <div class="text-center py-20">
@@ -117,11 +116,40 @@ Cart
             Looks like you haven’t added anything yet
         </p>
         <a href="{% url 'products' %}"
-           class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+            class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
             Start Shopping
         </a>
     </div>
     {% endif %}
 
+    <div class="flex items-center gap-2 my-4 ">
+        <input type="checkbox" id="select-all" class="w-5 h-5 cursor-pointer">
+        <span class="text-sm text-gray-600 font-medium">
+            Select All Items
+        </span>
+    </div>
+
+
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectAll = document.getElementById("select-all");
+        const checkboxes = document.querySelectorAll(".cart-checkbox");
+
+        selectAll.addEventListener("change", function () {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAll.checked;
+            });
+        });
+
+        // Optional: auto update "Select All" when individual checkbox changes
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener("change", function () {
+                selectAll.checked = [...checkboxes].every(cb => cb.checked);
+            });
+        });
+    });
+</script>
+
 {% endblock %}
