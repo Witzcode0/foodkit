@@ -233,6 +233,7 @@ def index(request):
     }
     return render(request, "store/index.html", context)
 
+
 def products(request):
     product_list = Product.objects.filter(is_active=True)
     paginator = Paginator(product_list, 12)
@@ -244,9 +245,10 @@ def products(request):
         "products": page_obj
     })
 
-def product_detail(request, id):
-    product = Product.objects.get(id=id)
-    return render(redirect, "store/porduct_detail.html", {"product":product})
+def product_detail(request, product_id):
+    product = Product.objects.get(id=product_id)
+    return render(request, "store/product_detail.html", {"product":product})
+
 
 @login_required
 def add_to_cart(request, product_id):
