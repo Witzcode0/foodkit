@@ -13,8 +13,15 @@
     {% if cart_items %}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
+        
         <!-- ================= CART ITEMS ================= -->
         <div class="lg:col-span-2 space-y-6">
+            <div class="flex items-center gap-2 my-4 ">
+                <input type="checkbox" id="select-all" class="w-5 h-5 cursor-pointer">
+                <span class="text-sm text-gray-600 font-medium">
+                    Select All Items
+                </span>
+            </div>
 
             {% for item in cart_items %}
             <div class="flex items-center gap-6 border rounded-xl p-5 bg-white">
@@ -122,12 +129,7 @@
     </div>
     {% endif %}
 
-    <div class="flex items-center gap-2 my-4 ">
-        <input type="checkbox" id="select-all" class="w-5 h-5 cursor-pointer">
-        <span class="text-sm text-gray-600 font-medium">
-            Select All Items
-        </span>
-    </div>
+
 
 
 </div>

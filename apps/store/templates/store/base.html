@@ -19,67 +19,78 @@
 
 <body class="bg-gray-100">
 
-    <!-- START HEADER -->
-    <header class="bg-white shadow-md fixed w-full top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+<!-- START HEADER -->
+<header class="bg-white shadow-md fixed w-full top-0 z-50">
+  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
 
-            <!-- Logo -->
-            <a href="{% url 'index' %}" class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-yellow-500 text-white flex items-center justify-center rounded-full">
-                    <i class="fas fa-layer-group"></i>
-                </div>
-                <span class="text-xl font-semibold">Tailblocks</span>
-            </a>
+    <!-- Logo -->
+    <a href="{% url 'index' %}" class="flex items-center gap-2">
+      <div class="w-10 h-10 bg-yellow-500 text-white flex items-center justify-center rounded-full">
+        <i class="fas fa-layer-group"></i>
+      </div>
+      <span class="text-xl font-semibold">Tailblocks</span>
+    </a>
 
-            <!-- DESKTOP MENU -->
-            <nav class="hidden md:flex items-center gap-6 text-gray-700">
-                <a href="{% url 'index' %}" class="hover:text-yellow-500">Home</a>
-                <a href="{% url 'products' %}" class="hover:text-yellow-500">Products</a>
-                <a href="{% url 'blogs' %}" class="hover:text-yellow-500">Blog</a>
-                <a href="{% url 'about' %}" class="hover:text-yellow-500">About</a>
-                <a href="{% url 'contact' %}" class="hover:text-yellow-500">Contact</a>
-            </nav>
+    <!-- DESKTOP MENU -->
+    <nav class="hidden md:flex items-center gap-6 text-gray-700">
+      <a href="{% url 'index' %}" class="hover:text-yellow-500">Home</a>
+      <a href="{% url 'products' %}" class="hover:text-yellow-500">Products</a>
+      <a href="{% url 'blogs' %}" class="hover:text-yellow-500">Blog</a>
+      <a href="{% url 'about' %}" class="hover:text-yellow-500">About</a>
+      <a href="{% url 'contact' %}" class="hover:text-yellow-500">Contact</a>
+    </nav>
 
-            <!-- DESKTOP BUTTON -->
-            <!-- DESKTOP AUTH -->
-            <!-- DESKTOP AUTH -->
-             {% if request.session.user_id %}
-            <div class="hidden md:flex items-center gap-4">
+    <!-- DESKTOP AUTH AREA -->
+    {% if request.session.user_id %}
+      <div class="hidden md:flex items-center gap-5">
 
-                <!-- Account Dropdown -->
-                <a href="{% url 'profile' %}" class="relative group">
-                    <button class="flex items-center gap-2  py-2 rounded">
-                        <i class="fas fa-user-circle text-xl" ></i>
-                        <span></span>
-                    </button>
-                </a>
-                
-                {% else %}
+        <!-- Cart -->
+        <a href="{% url 'cart' %}" class="relative hover:text-yellow-500">
+          <i class="fas fa-shopping-cart text-xl"></i>
 
-                <div class="">
-                    <!-- Sign In / Sign Up -->
-                    <a href="{% url 'signin' %}" class="px-4 py-2 border rounded hover:bg-gray-100 mr-3">
-                        Sign In
-                    </a>
-    
-                    <a href="{% url 'signup' %}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                        Sign Up
-                    </a>
-                </div>
+          <!-- Cart Count Badge (optional) -->
+          {% if cart_count %}
+            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              {{ cart_count }}
+            </span>
+          {% endif %}
+        </a>
 
-                
-                {% endif %}
-                <!-- MOBILE MENU BUTTON -->
-            <button id="openMenu" class="md:hidden text-2xl text-gray-700">
-                <i class="fas fa-bars"></i>
-            </button>
+        <!-- Profile -->
+        <a href="{% url 'profile' %}" class="flex items-center gap-2 hover:text-yellow-500">
+          <i class="fas fa-user-circle text-2xl"></i>
+          <span class="text-sm font-medium">
+            {{ request.session.user_name|default:"Account" }}
+          </span>
+        </a>
 
-            </div>
+        <!-- Logout -->
+        <a href="{% url 'logout' %}" class="px-3 py-2 border rounded bg-red-500 text-white hover:bg-red-100 hover:text-black">
+          Logout
+        </a>
 
+      </div>
 
-            
-        </div>
-    </header>
+    {% else %}
+      <!-- Sign In / Sign Up -->
+      <div class="hidden md:flex items-center gap-3">
+        <a href="{% url 'signin' %}" class="px-4 py-2 border rounded hover:bg-gray-100">
+          Sign In
+        </a>
+
+        <a href="{% url 'signup' %}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+          Sign Up
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- MOBILE MENU BUTTON -->
+    <button id="openMenu" class="md:hidden text-2xl text-gray-700">
+      <i class="fas fa-bars"></i>
+    </button>
+
+  </div>
+</header>
 
     
 

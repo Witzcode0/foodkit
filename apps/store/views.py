@@ -228,11 +228,12 @@ def forgot_password_otp_verify(request):
 
 def index(request):
     blogs = Blogs.objects.all().order_by("-created_at")[:3]
+    products = Product.objects.all().order_by("-created_at")[:8]
     context = {
-        'blogs': blogs
+        'blogs': blogs,
+        'products':products,
     }
     return render(request, "store/index.html", context)
-
 
 def products(request):
     product_list = Product.objects.filter(is_active=True)
@@ -249,6 +250,45 @@ def product_detail(request, product_id):
     product = Product.objects.get(id=product_id)
     return render(request, "store/product_detail.html", {"product":product})
 
+def blogs(request):
+    blog_list = Blogs.objects.all().order_by("-created_at")
+
+    paginator = Paginator(blog_list, 6)  # 5 blogs per page
+    page_number = request.GET.get('page')
+    blogs = paginator.get_page(page_number)
+
+    context = {
+        'blogs': blogs
+    }
+    return render(request, "store/blogs.html", context)
+
+def blog_detail(request, id):
+    blog = get_object_or_404(Blogs, id=id)
+    print(blog)
+    return render(request, "store/blog_detail.html", {"blog": blog})
+
+def about(request):
+    return render(request, "store/about.html")
+
+def contact(request):
+    if request.method == "POST":
+        fullname_ = request.POST['fullname']
+        email_ = request.POST['email']
+        message_ = request.POST['message']
+
+        if not is_valid_email(email_):
+            messages.warning(request, "Your email address is invalid.")
+            return render(request, "store/contact.html")
+
+        new_inquiry = Inqueries.objects.create(
+            fullname= fullname_,
+            email = email_,
+            message = message_
+        )
+        new_inquiry.save()
+        messages.success(request, "Your query submitted succefully.")
+        return redirect("contact")
+    return render(request, "store/contact.html")
 
 @login_required
 def add_to_cart(request, product_id):
@@ -337,46 +377,6 @@ def cart_remove(request, id):
     )
     cart_item.delete()
     return redirect("cart")
-
-def blogs(request):
-    blog_list = Blogs.objects.all().order_by("-created_at")
-
-    paginator = Paginator(blog_list, 6)  # 5 blogs per page
-    page_number = request.GET.get('page')
-    blogs = paginator.get_page(page_number)
-
-    context = {
-        'blogs': blogs
-    }
-    return render(request, "store/blogs.html", context)
-
-def blog_detail(request, id):
-    blog = get_object_or_404(Blogs, id=id)
-    print(blog)
-    return render(request, "store/blog_detail.html", {"blog": blog})
-
-def about(request):
-    return render(request, "store/about.html")
-
-def contact(request):
-    if request.method == "POST":
-        fullname_ = request.POST['fullname']
-        email_ = request.POST['email']
-        message_ = request.POST['message']
-
-        if not is_valid_email(email_):
-            messages.warning(request, "Your email address is invalid.")
-            return render(request, "store/contact.html")
-
-        new_inquiry = Inqueries.objects.create(
-            fullname= fullname_,
-            email = email_,
-            message = message_
-        )
-        new_inquiry.save()
-        messages.success(request, "Your query submitted succefully.")
-        return redirect("contact")
-    return render(request, "store/contact.html")
 
 @login_required
 def profile(request):
