@@ -13,7 +13,6 @@
     {% if cart_items %}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-        
         <!-- ================= CART ITEMS ================= -->
         <div class="lg:col-span-2 space-y-6">
             <div class="flex items-center gap-2 my-4 ">
@@ -26,11 +25,12 @@
             {% for item in cart_items %}
             <div class="flex items-center gap-6 border rounded-xl p-5 bg-white">
 
-                <!-- Select Checkbox (PLACEHOLDER) -->
+                <!-- Select Checkbox -->
                 <div>
                     <input type="checkbox"
-                        class="cart-checkbox w-5 h-5 text-green-600 border-gray-300 rounded cursor-pointer"
-                        value="{{ item.id }}">
+  class="cart-checkbox w-5 h-5 text-green-600 border-gray-300 rounded cursor-pointer"
+  value="{{ item.id }}"
+  data-price="{{ item.total_price }}">
 
                 </div>
 
@@ -74,7 +74,6 @@
                     <i class="fa-solid fa-trash"></i>
                 </a>
             </div>
-
             {% endfor %}
         </div>
 
@@ -85,33 +84,38 @@
                 Order Summary
             </h2>
 
+            <!-- Selected Subtotal -->
             <div class="flex justify-between text-sm mb-3">
-                <span>Subtotal</span>
-                <span>₹ {{ cart_total }}</span>
+                <span>Selected Subtotal</span>
+                <span>₹ <span id="selected-subtotal">0</span></span>
             </div>
 
+            <!-- Shipping -->
             <div class="flex justify-between text-sm mb-3">
                 <span>Shipping</span>
-                <span class="text-green-600">Free</span>
+                <span id="shipping-amount" class="text-green-600">₹ 0</span>
             </div>
 
             <hr class="my-4">
 
+            <!-- Final Total -->
             <div class="flex justify-between text-lg font-bold mb-6">
                 <span>Total</span>
-                <span>₹ {{ cart_total }}</span>
+                <span>₹ <span id="final-total">0</span></span>
             </div>
 
-            <a href=""
-                class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
-                Proceed to Checkout
+            <a href="#" id="checkout-btn"
+                class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition opacity-50 pointer-events-none">
+                Place Order
             </a>
 
             <a href="{% url 'products' %}" class="block text-center mt-4 text-sm text-gray-600 hover:underline">
                 Continue Shopping
             </a>
         </div>
+
     </div>
+
     {% else %}
     <!-- ================= EMPTY CART ================= -->
     <div class="text-center py-20">
@@ -129,29 +133,130 @@
     </div>
     {% endif %}
 
-
-
-
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const selectAll = document.getElementById("select-all");
-        const checkboxes = document.querySelectorAll(".cart-checkbox");
+document.addEventListener("DOMContentLoaded", function () {
+    const selectAll = document.getElementById("select-all");
+    const checkboxes = document.querySelectorAll(".cart-checkbox");
 
-        selectAll.addEventListener("change", function () {
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = selectAll.checked;
-            });
+    const subtotalSpan = document.getElementById("selected-subtotal");
+    const shippingSpan = document.getElementById("shipping-amount");
+    const finalTotalSpan = document.getElementById("final-total");
+
+    const checkoutBtn = document.getElementById("checkout-btn");
+
+    function calculateSelectedTotal() {
+        let subtotal = 0;
+        let anyChecked = false;
+
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                let price = parseFloat(checkbox.dataset.price) || 0;
+                subtotal += price;
+                anyChecked = true;
+            }
         });
 
-        // Optional: auto update "Select All" when individual checkbox changes
+        // Shipping logic
+        let shipping = 0;
+        if (anyChecked && subtotal < 1000) {
+            shipping = 100;
+            shippingSpan.textContent = "₹ 100";
+            shippingSpan.classList.remove("text-green-600");
+            shippingSpan.classList.add("text-red-500");
+        } else if (anyChecked && subtotal >= 1000) {
+            shipping = 0;
+            shippingSpan.textContent = "Free";
+            shippingSpan.classList.remove("text-red-500");
+            shippingSpan.classList.add("text-green-600");
+        } else {
+            shipping = 0;
+            shippingSpan.textContent = "₹ 0";
+            shippingSpan.classList.remove("text-red-500");
+            shippingSpan.classList.add("text-green-600");
+        }
+
+        let finalTotal = subtotal + shipping;
+
+        subtotalSpan.textContent = subtotal.toFixed(2);
+        finalTotalSpan.textContent = finalTotal.toFixed(2);
+
+        // Enable / disable checkout button
+        if (anyChecked) {
+            checkoutBtn.classList.remove("opacity-50", "pointer-events-none");
+        } else {
+            checkoutBtn.classList.add("opacity-50", "pointer-events-none");
+        }
+    }
+
+    // Select All logic
+    selectAll.addEventListener("change", function () {
         checkboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("change", function () {
-                selectAll.checked = [...checkboxes].every(cb => cb.checked);
-            });
+            checkbox.checked = selectAll.checked;
+        });
+        calculateSelectedTotal();
+    });
+
+    // Individual checkbox logic
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("change", function () {
+            selectAll.checked = [...checkboxes].every(cb => cb.checked);
+            calculateSelectedTotal();
         });
     });
+
+    // 🔥 PLACE ORDER (SEND DATA TO DJANGO)
+    checkoutBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        let selectedIds = [];
+        let subtotal = 0;
+
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedIds.push(checkbox.value);
+                subtotal += parseFloat(checkbox.dataset.price) || 0;
+            }
+        });
+
+        if (selectedIds.length === 0) {
+            alert("Please select at least one item.");
+            return;
+        }
+
+        let shipping = subtotal < 1000 ? 100 : 0;
+        let totalAmount = subtotal + shipping;
+
+        fetch("{% url 'place_order' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                item_ids: selectedIds,
+                subtotal: subtotal.toFixed(2),
+                shipping: shipping.toFixed(2),
+                total_amount: totalAmount.toFixed(2)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // redirect to success / order detail page
+                window.location.href = "/order-success/" + data.order_id + "/";
+            } else {
+                alert(data.error || "Order failed!");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Something went wrong. Please try again.");
+        });
+    });
+});
 </script>
+
 
 {% endblock %}

@@ -1,0 +1,196 @@
+{% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block body %}
+<div class="max-w-6xl mx-auto px-6 py-20">
+
+    <!-- Page Header -->
+    <div class="mb-10">
+        <h1 class="text-3xl font-bold text-gray-900">
+            My Orders
+        </h1>
+        <p class="text-gray-600 mt-2">
+            View all your past orders and their details
+        </p>
+    </div>
+
+    {% if orders %}
+    <div class="space-y-6">
+
+        {% for order in orders %}
+        <div class="border rounded-xl p-6 bg-white">
+
+            <!-- Top Row -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+
+                <div>
+                    <p class="text-sm text-gray-500">
+                        Order ID
+                    </p>
+                    <p class="font-mono text-sm text-gray-800 break-all">
+                        {{ order.id }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-500">
+                        Placed On
+                    </p>
+                    <p class="text-gray-800">
+                        {{ order.created_at|date:"d M Y, h:i A" }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-500">
+                        Total Amount
+                    </p>
+                    <p class="text-lg font-semibold text-gray-900">
+                        ₹ {{ order.total_amount }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-500">
+                        Delivery Status
+                    </p>
+                    <p class="text-lg font-semibold text-gray-900">
+                        {% if order.status == "CANCELLED" %}
+                        <span class="inline-block bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full">
+                            Cancelled
+                        </span>
+                        {% elif order.delivery_status == "DELIVERED" %}
+                        <span
+                            class="inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">
+                            Delivered
+                        </span>
+                        {% elif order.delivery_status == "OUT_FOR_DELIVERY" %}
+                        <span
+                            class="inline-block bg-orange-100 text-orange-700 text-sm font-semibold px-3 py-1 rounded-full">
+                            Out for Delivery
+                        </span>
+                        {% elif order.delivery_status == "SHIPPED" %}
+                        <span
+                            class="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full">
+                            Shipped
+                        </span>
+                        {% else %}
+                        <span
+                            class="inline-block bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full">
+                            Processing
+                        </span>
+                        {% endif %}
+                    </p>
+
+                </div>
+
+
+                <div>
+                    <p class="text-sm text-gray-500">
+                        Payment Status
+                    </p>
+                    {% if order.is_paid %}
+                    <span class="inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">
+                        Paid
+                    </span>
+                    {% else %}
+                    <span
+                        class="inline-block bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full">
+                        Pending
+                    </span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Items Preview -->
+            <div class="space-y-3">
+                {% for item in order.items.all|slice:":2" %}
+                <div class="flex items-center gap-4">
+
+                    <img src="{{ item.product.primary_image }}" class="w-14 h-14 object-contain rounded border">
+
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900">
+                            {{ item.product.name }}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            Qty: {{ item.qty }} × ₹ {{ item.price }}
+                        </p>
+                    </div>
+
+                    <div class="font-semibold text-gray-800">
+                        ₹ {{ item.total_price }}
+                    </div>
+
+                </div>
+                {% endfor %}
+
+                {% if order.items.count > 2 %}
+                <p class="text-sm text-gray-500">
+                    + {{ order.items.count|add:"-2" }} more item(s)
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 flex flex-wrap gap-4">
+                <a href="{% url 'order_detail' order.id %}"
+                    class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-semibold transition">
+                    View Details
+                </a>
+
+                {% if not order.is_paid %}
+                <a href="#"
+                    class="border border-green-600 text-green-700 hover:bg-green-50 px-5 py-2.5 rounded-lg font-semibold transition">
+                    Pay Now
+                </a>
+                {% endif %}
+
+
+                <!-- Cancel Order -->
+                {% if order.status != "CANCELLED" and order.delivery_status == "PROCESSING" %}
+                <a href="{% url 'cancel_order' order.id %}"
+                    onclick="return confirm('Are you sure you want to cancel this order?');"
+                    class="border border-red-600 text-red-700 hover:bg-red-50 px-5 py-2.5 rounded-lg font-semibold transition">
+                    Cancel Order
+                </a>
+                {% elif order.status == "CANCELLED" %}
+                <span
+                    class="inline-flex items-center gap-2 bg-red-100 text-red-700 px-5 py-2.5 rounded-lg font-semibold">
+                    <i class="fa-solid fa-ban"></i>
+                    Cancelled
+                </span>
+                {% endif %}
+            </div>
+
+
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-20">
+        <i class="fa-solid fa-box-open text-5xl text-gray-300 mb-6"></i>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-2">
+            No orders yet
+        </h2>
+        <p class="text-gray-500 mb-6">
+            You haven’t placed any orders yet.
+        </p>
+        <a href="{% url 'products' %}"
+            class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+            Start Shopping
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

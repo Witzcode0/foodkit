@@ -1,0 +1,40 @@
+{% extends "store/base.html" %}
+
+{% block title %}Order Success{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto px-6 py-20 text-center">
+
+    <i class="fa-solid fa-circle-check text-5xl text-green-600 mb-6"></i>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">
+        Order Placed Successfully 🎉
+    </h1>
+
+    <p class="text-gray-600 mb-6">
+        Thank you for your purchase! Your order has been created.
+    </p>
+
+    <div class="border rounded-xl p-6 bg-white text-left mb-8">
+        <h2 class="text-xl font-semibold mb-4">
+            Order Summary
+        </h2>
+
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Subtotal:</strong> ₹ {{ order.subtotal }}</p>
+        <p><strong>Shipping:</strong> ₹ {{ order.shipping }}</p>
+        <p><strong>Total:</strong> ₹ {{ order.total_amount }}</p>
+        <p><strong>Date:</strong> {{ order.created_at }}</p>
+    </div>
+
+    <a href="{% url 'products' %}"
+       class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+        Continue Shopping
+    </a>
+    <a href="{% url 'my_orders' %}"
+       class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+        My Orders
+    </a>
+
+</div>
+{% endblock %}

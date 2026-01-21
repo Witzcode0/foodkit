@@ -5,8 +5,13 @@ from django.conf import settings
 from django.core.mail import send_mail
 from apps.master.helpers import is_valid_email, is_valid_mobile, is_valid_password, generate_otp
 from apps.users.models import User, Inqueries
-from apps.store.models import BlogCategory, Blogs, Product, Cart
+from apps.store.models import BlogCategory, Blogs, Product, Cart, Address, Order, OrderItem
 from functools import wraps
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from decimal import Decimal
+import json
+from apps.store.forms import AddressForm
 
 # Create your views here.
 def login_required(view_func):
@@ -382,7 +387,201 @@ def cart_remove(request, id):
 def profile(request):
     user_id = request.session["user_id"]
     get_user = User.objects.get(id=user_id)
+    addresses = Address.objects.filter(user=user_id).order_by("-is_primary", "-id")
     context = {
-        'user':get_user
+        'user':get_user,
+        "addresses": addresses
     }
     return render(request, "store/profile.html", context)
+
+@login_required
+def add_address(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = user_
+            address.save()
+            return redirect("profile")
+    else:
+        form = AddressForm()
+
+    return render(request, "store/address_form.html", {
+        "form": form,
+        "title": "Add Address"
+    })
+
+
+@login_required
+def edit_address(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    address = get_object_or_404(Address, id=id, user=user_)
+
+    if request.method == "POST":
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
+    else:
+        form = AddressForm(instance=address)
+
+    return render(request, "store/address_form.html", {
+        "form": form,
+        "title": "Edit Address"
+    })
+
+
+@login_required
+def delete_address(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    address = get_object_or_404(Address, id=id, user=user_)
+    address.delete()
+    return redirect("profile")
+
+
+@csrf_exempt
+@login_required
+def place_order(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        item_ids = data.get("item_ids", [])
+        frontend_subtotal = Decimal(str(data.get("subtotal", 0)))
+        frontend_shipping = Decimal(str(data.get("shipping", 0)))
+        frontend_total = Decimal(str(data.get("total_amount", 0)))
+
+        if not item_ids:
+            return JsonResponse({"error": "No items selected"}, status=400)
+
+        cart_items = Cart.objects.filter(
+            id__in=item_ids,
+            user=user_
+        ).select_related("product")
+
+        if not cart_items.exists():
+            return JsonResponse({"error": "Invalid cart items"}, status=400)
+
+        # 🔐 Recalculate totals on server (ANTI-TAMPERING)
+        subtotal = Decimal("0")
+        for item in cart_items:
+            subtotal += Decimal(item.product.price) * item.qty
+
+        shipping = Decimal("100") if subtotal < 1000 else Decimal("0")
+        total_amount = subtotal + shipping
+
+        # Optional: compare frontend vs backend totals
+        if subtotal != frontend_subtotal or shipping != frontend_shipping or total_amount != frontend_total:
+            return JsonResponse({"error": "Totals mismatch"}, status=400)
+
+        # Create Order
+        order = Order.objects.create(
+            user=user_,
+            subtotal=subtotal,
+            shipping=shipping,
+            total_amount=total_amount,
+        )
+
+        # Create OrderItems
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                qty=item.qty,
+                price=item.product.price,
+                total_price=item.product.price * item.qty,
+            )
+
+        # Remove ordered items from cart
+        cart_items.delete()
+
+        return JsonResponse({
+            "success": True,
+            "order_id": order.id
+        })
+
+    return JsonResponse({"error": "Invalid request"}, status=405)
+
+@login_required
+def my_orders(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    orders = Order.objects.filter(user=user_).order_by("-created_at")
+    return render(request, "store/my_orders.html", {
+        "orders": orders
+    })
+@login_required
+def order_detail(request, order_id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    order = get_object_or_404(Order, id=order_id, user=user_)
+    return render(request, "store/order_detail.html", {
+        "order": order
+    })
+
+@login_required
+def order_success(request, order_id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    order = get_object_or_404(Order, id=order_id, user=user_)
+    return render(request, "store/order_success.html", {
+        "order": order
+    })
+@login_required
+def cancel_order(request, order_id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect("login")
+
+    user_ = get_object_or_404(User, id=user_id)
+    order = get_object_or_404(Order, id=order_id, user=user_)
+
+    if order.status == "CANCELLED":
+        messages.warning(request, "This order is already cancelled.")
+        return redirect("order_detail", order_id=order.id)
+
+    if order.delivery_status in ["SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED"]:
+        messages.error(request, "This order cannot be cancelled as it is already shipped.")
+        return redirect("order_detail", order_id=order.id)
+
+    order.status = "CANCELLED"
+    order.delivery_status = "CANCELLED"
+    order.is_paid = False
+    order.save()
+
+    messages.success(request, "Your order has been cancelled successfully.")
+    return redirect("order_detail", order_id=order.id)

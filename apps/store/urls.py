@@ -21,4 +21,12 @@ urlpatterns = [
     path("about/", about, name="about"),
     path("contact/", contact, name="contact"),
     path("profile/", profile, name="profile"),
+    path("address/add/", add_address, name="add_address"),
+    path("address/edit/<uuid:id>/", edit_address, name="edit_address"),
+    path("address/delete/<uuid:id>/", delete_address, name="delete_address"),
+    path("place-order/", place_order, name="place_order"),
+    path("my-orders/", my_orders, name="my_orders"),
+    path("orders/<uuid:order_id>/", order_detail, name="order_detail"),
+    path("order-success/<uuid:order_id>/", order_success, name="order_success"),
+    path("order/<uuid:order_id>/cancel/", cancel_order, name="cancel_order"),
 ]
