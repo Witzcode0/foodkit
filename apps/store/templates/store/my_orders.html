@@ -7,7 +7,7 @@
 <div class="max-w-6xl mx-auto px-6 py-20">
 
     <!-- Page Header -->
-    <div class="mb-10">
+    <div class="mb-10 pt-6">
         <h1 class="text-3xl font-bold text-gray-900">
             My Orders
         </h1>
@@ -26,7 +26,7 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
 
                 <div>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 font-semibold">
                         Order ID
                     </p>
                     <p class="font-mono text-sm text-gray-800 break-all">
@@ -35,7 +35,7 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 font-semibold">
                         Placed On
                     </p>
                     <p class="text-gray-800">
@@ -44,7 +44,7 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 font-semibold">
                         Total Amount
                     </p>
                     <p class="text-lg font-semibold text-gray-900">
@@ -53,7 +53,7 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 font-semibold">
                         Delivery Status
                     </p>
                     <p class="text-lg font-semibold text-gray-900">
@@ -62,32 +62,26 @@
                             Cancelled
                         </span>
                         {% elif order.delivery_status == "DELIVERED" %}
-                        <span
-                            class="inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">
                             Delivered
                         </span>
                         {% elif order.delivery_status == "OUT_FOR_DELIVERY" %}
-                        <span
-                            class="inline-block bg-orange-100 text-orange-700 text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="inline-block bg-orange-100 text-orange-700 text-sm font-semibold px-3 py-1 rounded-full">
                             Out for Delivery
                         </span>
                         {% elif order.delivery_status == "SHIPPED" %}
-                        <span
-                            class="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full">
                             Shipped
                         </span>
                         {% else %}
-                        <span
-                            class="inline-block bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="inline-block bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full">
                             Processing
                         </span>
                         {% endif %}
                     </p>
-
                 </div>
 
-
-                <div>
+                <!-- <div>
                     <p class="text-sm text-gray-500">
                         Payment Status
                     </p>
@@ -96,16 +90,27 @@
                         Paid
                     </span>
                     {% else %}
-                    <span
-                        class="inline-block bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full">
+                    <span class="inline-block bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full">
                         Pending
                     </span>
                     {% endif %}
-                </div>
+                </div> -->
 
             </div>
 
             <hr class="my-4">
+
+            <!-- ================= ORDER ADDRESS ================= -->
+            {% if order.address %}
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-500 mb-1">Delivery Address :</h3>
+                <p class="text-gray-800 text-sm">
+                    {{ order.address.full_name|title }} - {{ order.address.phone }}<br>
+                    {{ order.address.address_line1 }}{% if order.address.address_line2 %}, {{ order.address.address_line2 }}{% endif %},<br>
+                    {{ order.address.city }}, {{ order.address.state }} - {{ order.address.pincode }}
+                </p>
+            </div>
+            {% endif %}
 
             <!-- Items Preview -->
             <div class="space-y-3">
@@ -140,23 +145,21 @@
             <!-- Actions -->
             <div class="mt-6 flex flex-wrap gap-4">
                 <a href="{% url 'order_detail' order.id %}"
-                    class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-semibold transition">
+                   class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-semibold transition">
                     View Details
                 </a>
 
                 {% if not order.is_paid %}
                 <a href="#"
-                    class="border border-green-600 text-green-700 hover:bg-green-50 px-5 py-2.5 rounded-lg font-semibold transition">
+                   class="border border-green-600 text-green-700 hover:bg-green-50 px-5 py-2.5 rounded-lg font-semibold transition">
                     Pay Now
                 </a>
                 {% endif %}
 
-
-                <!-- Cancel Order -->
                 {% if order.status != "CANCELLED" and order.delivery_status == "PROCESSING" %}
                 <a href="{% url 'cancel_order' order.id %}"
-                    onclick="return confirm('Are you sure you want to cancel this order?');"
-                    class="border border-red-600 text-red-700 hover:bg-red-50 px-5 py-2.5 rounded-lg font-semibold transition">
+                   onclick="return confirm('Are you sure you want to cancel this order?');"
+                   class="border border-red-600 text-red-700 hover:bg-red-50 px-5 py-2.5 rounded-lg font-semibold transition">
                     Cancel Order
                 </a>
                 {% elif order.status == "CANCELLED" %}
@@ -167,8 +170,6 @@
                 </span>
                 {% endif %}
             </div>
-
-
 
         </div>
         {% endfor %}
@@ -186,7 +187,7 @@
             You haven’t placed any orders yet.
         </p>
         <a href="{% url 'products' %}"
-            class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+           class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
             Start Shopping
         </a>
     </div>

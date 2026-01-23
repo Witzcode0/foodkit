@@ -331,10 +331,15 @@ def cart(request):
     cart_items = Cart.objects.filter(user=user_)
     total_amount = sum(item.total_price for item in cart_items)
 
+    # Get all addresses of the user
+    addresses = Address.objects.filter(user=user_).order_by('-is_primary')
+
     return render(request, "store/cart.html", {
         "cart_items": cart_items,
-        "total_amount": total_amount
+        "total_amount": total_amount,
+        "addresses": addresses
     })
+
 
 @login_required
 def cart_increase(request, id):
@@ -454,7 +459,6 @@ def delete_address(request, id):
     address.delete()
     return redirect("profile")
 
-
 @csrf_exempt
 @login_required
 def place_order(request):
@@ -464,6 +468,7 @@ def place_order(request):
         return redirect("login")
 
     user_ = get_object_or_404(User, id=user_id)
+
     if request.method == "POST":
         data = json.loads(request.body)
 
@@ -471,6 +476,7 @@ def place_order(request):
         frontend_subtotal = Decimal(str(data.get("subtotal", 0)))
         frontend_shipping = Decimal(str(data.get("shipping", 0)))
         frontend_total = Decimal(str(data.get("total_amount", 0)))
+        selected_address_id = data.get("address_id")  # NEW: address sent from frontend
 
         if not item_ids:
             return JsonResponse({"error": "No items selected"}, status=400)
@@ -483,7 +489,7 @@ def place_order(request):
         if not cart_items.exists():
             return JsonResponse({"error": "Invalid cart items"}, status=400)
 
-        # 🔐 Recalculate totals on server (ANTI-TAMPERING)
+        # 🔐 Recalculate totals on server
         subtotal = Decimal("0")
         for item in cart_items:
             subtotal += Decimal(item.product.price) * item.qty
@@ -495,12 +501,21 @@ def place_order(request):
         if subtotal != frontend_subtotal or shipping != frontend_shipping or total_amount != frontend_total:
             return JsonResponse({"error": "Totals mismatch"}, status=400)
 
+        # Get the address: either selected or primary
+        if selected_address_id:
+            address = get_object_or_404(Address, id=selected_address_id, user=user_)
+        else:
+            address = Address.objects.filter(user=user_, is_primary=True).first()
+            if not address:
+                return JsonResponse({"error": "No address available"}, status=400)
+
         # Create Order
         order = Order.objects.create(
             user=user_,
             subtotal=subtotal,
             shipping=shipping,
             total_amount=total_amount,
+            address=address  # Add the address to order
         )
 
         # Create OrderItems
@@ -535,6 +550,7 @@ def my_orders(request):
     return render(request, "store/my_orders.html", {
         "orders": orders
     })
+
 @login_required
 def order_detail(request, order_id):
     user_id = request.session.get('user_id')

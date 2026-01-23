@@ -28,26 +28,23 @@
                 <!-- Select Checkbox -->
                 <div>
                     <input type="checkbox"
-  class="cart-checkbox w-5 h-5 text-green-600 border-gray-300 rounded cursor-pointer"
-  value="{{ item.id }}"
-  data-price="{{ item.total_price }}">
-
+                           class="cart-checkbox w-5 h-5 text-green-600 border-gray-300 rounded cursor-pointer"
+                           value="{{ item.id }}"
+                           data-price="{{ item.total_price }}">
                 </div>
 
                 <!-- Product Image -->
                 <img src="{{ item.product.primary_image }}" alt="{{ item.product.name }}"
-                    class="w-24 h-24 object-contain rounded-lg border">
+                     class="w-24 h-24 object-contain rounded-lg border">
 
                 <!-- Product Info -->
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900">
                         {{ item.product.name }}
                     </h3>
-
                     <p class="text-sm text-gray-500">
                         Weight: {{ item.product.weight }}
                     </p>
-
                     <p class="text-green-600 font-semibold mt-1">
                         ₹ {{ item.product.price }}
                     </p>
@@ -56,11 +53,9 @@
                 <!-- Quantity -->
                 <div class="flex items-center gap-2">
                     <a href="{% url 'cart_decrease' item.id %}" class="px-3 py-1 border rounded hover:bg-gray-100">−</a>
-
                     <span class="px-4 py-1 border rounded">
                         {{ item.qty }}
                     </span>
-
                     <a href="{% url 'cart_increase' item.id %}" class="px-3 py-1 border rounded hover:bg-gray-100">+</a>
                 </div>
 
@@ -84,6 +79,32 @@
                 Order Summary
             </h2>
 
+            <!-- ================= SELECT ADDRESS ================= -->
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2">Select Delivery Address</h3>
+                
+                {% if addresses %}
+                <div class="space-y-2">
+                    {% for address in addresses %}
+                    <label class="flex items-start gap-2 border rounded p-3 cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="address" value="{{ address.id }}" {% if address.is_primary %}checked{% endif %}
+                               class="address-radio w-4 h-4 mt-1 text-green-600">
+                        <div>
+                            <p class="font-medium">{{ address.full_name }} - {{ address.phone }}</p>
+                            <p class="text-sm text-gray-600">
+                                {{ address.address_line1 }}{% if address.address_line2 %}, {{ address.address_line2 }}{% endif %}, 
+                                {{ address.city }}, {{ address.state }} - {{ address.pincode }}
+                                {% if address.is_primary %}<span class="text-green-600 font-semibold">(Primary)</span>{% endif %}
+                            </p>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500">No addresses found. Please add an address in your profile before placing an order.</p>
+                {% endif %}
+            </div>
+
             <!-- Selected Subtotal -->
             <div class="flex justify-between text-sm mb-3">
                 <span>Selected Subtotal</span>
@@ -105,7 +126,7 @@
             </div>
 
             <a href="#" id="checkout-btn"
-                class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition opacity-50 pointer-events-none">
+               class="block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition opacity-50 pointer-events-none">
                 Place Order
             </a>
 
@@ -127,7 +148,7 @@
             Looks like you haven’t added anything yet
         </p>
         <a href="{% url 'products' %}"
-            class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+           class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
             Start Shopping
         </a>
     </div>
@@ -152,13 +173,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         checkboxes.forEach(function (checkbox) {
             if (checkbox.checked) {
-                let price = parseFloat(checkbox.dataset.price) || 0;
-                subtotal += price;
+                subtotal += parseFloat(checkbox.dataset.price) || 0;
                 anyChecked = true;
             }
         });
 
-        // Shipping logic
         let shipping = 0;
         if (anyChecked && subtotal < 1000) {
             shipping = 100;
@@ -178,11 +197,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         let finalTotal = subtotal + shipping;
-
         subtotalSpan.textContent = subtotal.toFixed(2);
         finalTotalSpan.textContent = finalTotal.toFixed(2);
 
-        // Enable / disable checkout button
         if (anyChecked) {
             checkoutBtn.classList.remove("opacity-50", "pointer-events-none");
         } else {
@@ -190,15 +207,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Select All logic
     selectAll.addEventListener("change", function () {
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = selectAll.checked;
-        });
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
         calculateSelectedTotal();
     });
 
-    // Individual checkbox logic
     checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener("change", function () {
             selectAll.checked = [...checkboxes].every(cb => cb.checked);
@@ -206,7 +219,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // 🔥 PLACE ORDER (SEND DATA TO DJANGO)
     checkoutBtn.addEventListener("click", function (e) {
         e.preventDefault();
 
@@ -225,6 +237,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // ✅ Get selected address
+        let addressRadio = document.querySelector("input[name='address']:checked");
+        if (!addressRadio) {
+            alert("Please select a delivery address.");
+            return;
+        }
+        let address_id = addressRadio.value;
+
         let shipping = subtotal < 1000 ? 100 : 0;
         let totalAmount = subtotal + shipping;
 
@@ -238,13 +258,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 item_ids: selectedIds,
                 subtotal: subtotal.toFixed(2),
                 shipping: shipping.toFixed(2),
-                total_amount: totalAmount.toFixed(2)
+                total_amount: totalAmount.toFixed(2),
+                address_id: address_id
             })
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                // redirect to success / order detail page
                 window.location.href = "/order-success/" + data.order_id + "/";
             } else {
                 alert(data.error || "Order failed!");
@@ -255,8 +275,8 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Something went wrong. Please try again.");
         });
     });
+
 });
 </script>
-
 
 {% endblock %}
