@@ -1,0 +1,13 @@
+{
+    "personal-info" : {
+        "name": "brijesh",
+        "languages":{
+            "gujarati": "brijeshh",
+            "hindi":"bijesh",
+            "xyz":{
+                "abc":"efg"
+            }
+        }
+    }
+}
+

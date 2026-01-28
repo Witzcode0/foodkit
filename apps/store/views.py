@@ -318,7 +318,7 @@ def add_to_cart(request, product_id):
     cart_item.save()
 
     messages.success(request, f"{product.name} added to cart")
-    return redirect("cart")  # cart page URL name
+    return redirect("products")  # cart page URL name
 
 @login_required
 def cart(request):
@@ -564,6 +564,30 @@ def order_detail(request, order_id):
         "order": order
     })
 
+def send_order_success_email(user, order):
+    subject = f"Order Confirmed – #{order.id}"
+
+    message = f"""
+    Hi {user.first_name} {user.last_name},
+
+    Thank you for your order!
+
+    Order ID: {order.id}
+    Total Amount: ₹ {order.total_amount}
+
+    Your order has been successfully placed and is being processed.
+
+    Thank you for shopping with Foodkit
+    """
+
+    send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        fail_silently=False,
+    )
+    
 @login_required
 def order_success(request, order_id):
     user_id = request.session.get('user_id')
@@ -572,10 +596,17 @@ def order_success(request, order_id):
         return redirect("login")
 
     user_ = get_object_or_404(User, id=user_id)
+
     order = get_object_or_404(Order, id=order_id, user=user_)
+
+    if not request.session.get(f"order_email_sent_{order.id}"):
+        send_order_success_email(user_, order)
+        request.session[f"order_email_sent_{order.id}"] = True
+
     return render(request, "store/order_success.html", {
         "order": order
     })
+
 @login_required
 def cancel_order(request, order_id):
     user_id = request.session.get('user_id')
