@@ -1,0 +1,62 @@
+{% extends 'store/base.html' %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block body %}
+<div class="max-w-lg mx-auto mt-16 bg-white p-8 mt-64 mb-16 rounded-xl shadow-lg">
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+        Update Profile Picture
+    </h2>
+
+    <form action="{% url 'update_image' %}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Current Profile Picture -->
+        <div class="flex justify-center">
+            {% if user.profile %}
+                <img src="{{ user.profile.url }}"
+                     alt="Profile"
+                     class="w-32 h-32 rounded-full object-cover border">
+            {% else %}
+                <div class="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                    No Image
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Upload New Picture -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Upload New Profile Picture
+            </label>
+            <input type="file"
+                   name="profile"
+                   accept="image/*"
+                   required
+                   class="block w-full text-sm text-gray-600
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-lg file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-indigo-50 file:text-indigo-600
+                          hover:file:bg-indigo-100">
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-4">
+            <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+                Save Changes
+            </button>
+
+            <a href="{% url 'profile' %}"
+               class="w-full text-center border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

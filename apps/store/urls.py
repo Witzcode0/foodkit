@@ -21,6 +21,7 @@ urlpatterns = [
     path("about/", about, name="about"),
     path("contact/", contact, name="contact"),
     path("profile/", profile, name="profile"),
+    path("update-image/", update_image,name='update_image'),
     path("address/add/", add_address, name="add_address"),
     path("address/edit/<uuid:id>/", edit_address, name="edit_address"),
     path("address/delete/<uuid:id>/", delete_address, name="delete_address"),

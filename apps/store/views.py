@@ -400,6 +400,20 @@ def profile(request):
     return render(request, "store/profile.html", context)
 
 @login_required
+def update_image(request):
+    user_id = request.session["user_id"]
+    get_user = User.objects.get(id=user_id)
+    if request.method == "POST":
+        get_user.profile = request.FILES.get("profile")
+        get_user.save()
+        messages.success(request, "Profile picture updated successfully")
+        return redirect("profile")
+    context = {
+        'user':get_user,
+    }
+    return render(request, "store/update_image.html", context)
+
+@login_required
 def add_address(request):
     user_id = request.session.get('user_id')
 
